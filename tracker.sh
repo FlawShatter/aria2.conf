@@ -100,6 +100,7 @@ ADD_TRACKERS_RPC() {
 }
 
 ADD_TRACKERS_RPC_STATUS() {
+    echo -e "$(DATE_TIME) ${INFO} ${RPC_ADDRESS} ${RPC_SECRET}"
     RPC_RESULT=$(ADD_TRACKERS_RPC)
     [[ $(echo ${RPC_RESULT} | grep OK) ]] &&
         echo -e "$(DATE_TIME) ${INFO} BT trackers successfully added to Aria2 !" ||
@@ -117,10 +118,13 @@ ADD_TRACKERS_LOCAL_RPC() {
         exit 1
     else
         RPC_PORT=$(grep ^rpc-listen-port ${ARIA2_CONF} | cut -d= -f2-)
-        RPC_SECRET=$(grep ^rpc-secret ${ARIA2_CONF} | cut -d= -f2-)
         [[ ${RPC_PORT} ]] || {
             echo -e "$(DATE_TIME) ${ERROR} Aria2 configuration file incomplete."
             exit 1
+        }
+        RPC_SECRET=$(grep ^rpc-secret ${ARIA2_CONF} | cut -d= -f2-)
+        [[ ${RPC_PORT} ]] || {
+            echo -e "$(DATE_TIME) ${ERROR} Aria2 configuration file no set RPC_SECRET"
         }
         RPC_ADDRESS="localhost:${RPC_PORT}/jsonrpc"
         echo -e "$(DATE_TIME) ${INFO} Adding BT trackers to Aria2 ..." && echo
